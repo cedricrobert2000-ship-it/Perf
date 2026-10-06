@@ -34,7 +34,7 @@ export const KINDS = {
 export const MEMBER_COLORS = ['#ff5a1f', '#ff2d87', '#6b4dff', '#00c2ff', '#c6ff3d', '#ffb33f', '#19d3a2', '#f4f1ea'];
 
 // Shrinks a picked image to a reasonable JPEG data URL before upload.
-export function compressImage(file, maxSize = 1600) {
+export function compressImage(file, maxSize = 1200) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -45,7 +45,7 @@ export function compressImage(file, maxSize = 1600) {
       canvas.height = Math.round(img.height * scale);
       canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL('image/jpeg', 0.82));
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);

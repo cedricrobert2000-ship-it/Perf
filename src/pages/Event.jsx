@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { Bib, downloadBib } from '../Bib.jsx';
 import { KINDS, resolveCover } from '../covers.js';
-import { fmtDay, fmtDuration, fmtKm, fmtPace, fmtTime, padBib, parseDuration, relative } from '../format.js';
+import { downloadIcs, fmtDay, fmtDuration, fmtKm, fmtPace, fmtTime, padBib, parseDuration, relative } from '../format.js';
 import { absoluteUrl, linkTo, navigate } from '../router.js';
 import { useSession } from '../session.jsx';
 import { Avatar, Empty, Modal, Photo, Spinner, useToast } from '../ui.jsx';
@@ -151,7 +151,7 @@ function Wall({ event, me, act }) {
 }
 
 export default function EventPage({ id }) {
-  const { me } = useSession();
+  const { me, config } = useSession();
   const toast = useToast();
   const [event, setEvent] = useState(null);
   const [error, setError] = useState('');
@@ -269,9 +269,9 @@ export default function EventPage({ id }) {
           </button>
         )}
         <div className="action-row">
-          <a className="btn ghost" href={`/api/events/${event.id}/calendar.ics`}>
+          <button className="btn ghost" onClick={() => downloadIcs(event, config.clubName)}>
             + Agenda
-          </a>
+          </button>
           <button className="btn ghost" onClick={share}>
             Partager
           </button>
@@ -334,9 +334,9 @@ export default function EventPage({ id }) {
               <button className="btn primary" onClick={() => downloadBib({ bib: myBib, member: me, event })}>
                 Télécharger le PNG
               </button>
-              <a className="btn ghost" href={`/api/events/${event.id}/calendar.ics`}>
+              <button className="btn ghost" onClick={() => downloadIcs(event, config.clubName)}>
                 + Agenda
-              </a>
+              </button>
             </div>
           </div>
         )}

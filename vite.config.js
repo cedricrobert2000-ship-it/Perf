@@ -1,13 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// base './' so the build works under https://<user>.github.io/<repo>/
 export default defineConfig({
+  base: './',
   plugins: [react()],
-  server: {
-    host: true,
-    proxy: {
-      '/api': 'http://localhost:3001',
-      '/uploads': 'http://localhost:3001',
-    },
-  },
+  server: { host: true },
 });

@@ -59,3 +59,31 @@ export function toLocalInput(iso) {
   const off = d.getTimezoneOffset() * 60000;
   return new Date(d.getTime() - off).toISOString().slice(0, 16);
 }
+
+// Saves an .ics file so the event lands in the phone's calendar.
+export function downloadIcs(event, clubName = 'PERF') {
+  const stamp = (d) => new Date(d).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const esc = (s) => String(s || '').replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
+  const start = Date.parse(event.startsAt);
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    `PRODID:-//${clubName}//Run Club//FR`,
+    'BEGIN:VEVENT',
+    `UID:perf-event-${event.id}@perf`,
+    `DTSTAMP:${stamp(Date.now())}`,
+    `DTSTART:${stamp(start)}`,
+    `DTEND:${stamp(start + 90 * 60 * 1000)}`,
+    `SUMMARY:${esc(`${clubName} · ${event.title}`)}`,
+    `LOCATION:${esc(event.location)}`,
+    `DESCRIPTION:${esc(event.description)}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+  const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `perf-${event.id}.ics`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}

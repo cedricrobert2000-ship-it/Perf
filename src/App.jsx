@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import { isConfigured } from './api.js';
 import { useRoute, linkTo, navigate } from './router.js';
 import { useSession } from './session.jsx';
-import { Avatar, Spinner, useToast } from './ui.jsx';
+import { Avatar, Empty, Spinner, useToast } from './ui.jsx';
 import Home from './pages/Home.jsx';
 import EventPage from './pages/Event.jsx';
 import EventForm from './pages/EventForm.jsx';
@@ -60,6 +61,17 @@ function Tab({ to, label, icon, active }) {
   );
 }
 
+function Setup() {
+  return (
+    <Empty title="Presque prêt 🏁">
+      <p className="muted">
+        L'app n'est pas encore branchée à sa base de données. Suis les 3 étapes du README
+        (Supabase → <code>schema.sql</code> → les 2 variables GitHub), puis relance le déploiement.
+      </p>
+    </Empty>
+  );
+}
+
 function TokenLogin({ token }) {
   const { loginWithToken } = useSession();
   const toast = useToast();
@@ -89,7 +101,8 @@ export default function App() {
   const loginToken = path.startsWith('/login/') ? path.slice(7) : null;
 
   let content;
-  if (loginToken) content = <TokenLogin token={loginToken} />;
+  if (!isConfigured()) content = <Setup />;
+  else if (loginToken) content = <TokenLogin token={loginToken} />;
   else if (!ready) content = <Spinner />;
   else if (!me) content = <Welcome />;
   else content = <Page path={path} />;
